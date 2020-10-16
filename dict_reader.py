@@ -18,7 +18,8 @@ class Dict_reader:
         if self.__scientific_read == 0:
             with open("ru/scientific.txt", 'r') as f:
                 self.__scientific = f.read()
-        
+
+        self.__scientific = self.__scientific.split("\n")
         result = self.__scientific[self.__scientific_read:amount]
         self.__scientific_read += amount
         return result
@@ -32,7 +33,8 @@ class Dict_reader:
         if self.__words_read == 0:
             with open("ru/words.txt", 'r') as f:
                 self.__words = f.read()
-        
+
+        self.__words = self.__words.split("\n")
         result = self.__words[self.__words_read:amount]
         self.__words_read += amount
         return result
@@ -46,7 +48,8 @@ class Dict_reader:
         if self.__names_read == 0:
             with open("ru/names.txt", 'r') as f:
                 self.__names = f.read()
-        
+
+        self.__names = self.__names.split("\n")
         result = self.__names[self.__names_read:amount]
         self.__names_read += amount
         return result
