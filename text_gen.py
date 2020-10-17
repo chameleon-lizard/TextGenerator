@@ -17,7 +17,7 @@ stop.add(morph.parse("который")[0].normal_form)
 
 # Creating dict to store words
 translate_dict = dict()
-text = "Если вы что-то боитесь сделать, то это как раз и есть то, что вам необходимо сделать в первую очередь."
+text = "Безумно, можно быть первым. Безумно, можно через стены. Попасть туда, окунуться в даль, я так хочу туда...."
 tokens = nltk.word_tokenize(text)
 
 # For statement in which we iterate over the text
@@ -35,7 +35,7 @@ for token in tokens:
 
     # Checking if it already exists in our dictionary
     if current_normal.word in translate_dict:
-        tokens[tokens.index(token)] = dict_word.inflect(current_word.tag.grammemes)
+        tokens[tokens.index(token)] = morph.parse(translate_dict[current_normal.word])[0].inflect(current_word.tag.grammemes).word
         continue
 
     # If the word is name
