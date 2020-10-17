@@ -34,10 +34,8 @@ class TextGenerator:
             current_normal = self.__morph.parse(current_word.normal_form)[0]
 
             # Getting the original word's unchangeable grammemes 
-            if current_normal.tag.grammemes <= current_word.tag.grammemes:
-                params = set(current_normal.tag.grammemes)
-            else:
-                continue
+            params = set(current_normal.tag.grammemes)
+            
 
             # Checking if it's actually a word and if it's a self.__stop-word
             if "LATN" in params or "PNCT" in params or "NUMB" in params or "intg" in params or "real" in params or "ROMN" in params or "UNKN" in params or current_word.normal_form in self.__stop:
@@ -75,6 +73,13 @@ class TextGenerator:
             
             # Adding resulting word to the dictionary and replacing the original word
             translate_dict[current_normal.word] = dict_normal.word
+            if dict_word.inflect(current_word.tag.grammemes) == None:
+                for parse in self.__morph.parse(token):
+                    if dict_word.inflect(parse.tag.grammemes) != None:
+                        tokens[tokens.index(token)] = dict_word.inflect(parse.tag.grammemes).word
+                        break
+                continue
+            
             tokens[tokens.index(token)] = dict_word.inflect(current_word.tag.grammemes).word
 
         tokens = " ".join(tokens)
@@ -103,4 +108,6 @@ class TextGenerator:
         self.__stop.add(self.__morph.parse("который")[0].normal_form)
 
 gen = TextGenerator()
-print(gen.text(text='может сделать датасет на своем ебале и сказать, что процесс обучения это "калибровка под индивидульный рельеф лица пользователя"'))
+print(gen.text(text="""
+Всё смешалось в доме Облонских. Жена узнала, что муж был в связи с бывшею в их доме француженкою-гувернанткой, и объявила мужу, что не может жить с ним в одном доме... Жена не выходила из своих комнат, мужа третий день не было дома. Дети бегали по всему дому как потерянные; англичанка поссорилась с экономкой и написала записку приятельнице, прося приискать ей новое место; повар ушел еще вчера со двора, во время обеда; черная кухарка и кучер просили расчета.
+"""))
