@@ -3,6 +3,7 @@ from nltk.corpus import stopwords
 import dict_reader
 import pymorphy2
 import nltk
+import re
 
 # Initializing and creating objects for later use
 morph = pymorphy2.MorphAnalyzer(lang="ru")
@@ -17,7 +18,7 @@ stop.add(morph.parse("который")[0].normal_form)
 
 # Creating dict to store words
 translate_dict = dict()
-text = "Безумно, можно быть первым. Безумно, можно через стены. Попасть туда, окунуться в даль, я так хочу туда...."
+text = "я отвечаю «ну ща я встану», подмигиваю (!!!), поворачиваюсь. на другой бок и продолжаю спать"
 tokens = nltk.word_tokenize(text)
 
 # For statement in which we iterate over the text
@@ -67,4 +68,15 @@ for token in tokens:
     translate_dict[current_normal.word] = dict_normal.word
     tokens[tokens.index(token)] = dict_word.inflect(current_word.tag.grammemes).word
 
-print(" ".join(tokens))
+tokens = " ".join(tokens)
+tokens = re.sub(r"\s+(?=[.,?!():;\"\'\\/»])", "", tokens, 0, re.MULTILINE)
+tokens = re.sub(r"[«]\s", " «", tokens, 0, re.MULTILINE)
+tokens = nltk.sent_tokenize(tokens, language="russian")
+result = ""
+
+for sent in tokens:
+    if result != "":
+        result += " "
+    result += sent[0].capitalize() + sent[1:]
+
+print(result)
