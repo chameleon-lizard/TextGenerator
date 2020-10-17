@@ -17,6 +17,9 @@ class Dict_reader:
 
         Return value: list of scientific terms.
         """
+        if len(self.__scientific) != 0 and self.__scientific_read  == len(self.__scientific):
+            self.__scientific_read = 1
+
         if self.__scientific_read == 0:
             with open("ru/scientific.txt", 'r') as f:
                 self.__scientific = f.read()
@@ -34,6 +37,9 @@ class Dict_reader:
 
         Return value: list of random words.
         """
+        if len(self.__words) != 0 and self.__words_read  == len(self.__words):
+            self.__words_read = 1
+
         if self.__words_read == 0:
             with open("ru/words.txt", 'r') as f:
                 self.__words = f.read()
@@ -51,6 +57,9 @@ class Dict_reader:
 
         Return value: list of names.
         """
+        if len(self.__names) != 0 and self.__names_read  == len(self.__names):
+            self.__names_read = 1
+
         if self.__names_read == 0:
             with open("ru/names.txt", 'r') as f:
                 self.__names = f.read()
