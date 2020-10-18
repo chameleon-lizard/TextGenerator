@@ -36,6 +36,27 @@ class DictReader:
         self.__words_read += amount
         return list(result)
 
+    def get_simple(self, amount = 1):
+        """
+        Gets a random simple word from the dictionary. 
+
+        Params: amount - amount of words that is being returned. By default is 1.
+
+        Return value: list of random words.
+        """
+        if len(self.__words) != 0 and self.__words_read  == len(self.__words):
+            self.__words_read = 1
+
+        if self.__words_read == 0:
+            with open("ru/words.txt", 'r') as f:
+                self.__words = f.read()
+                self.__words = self.__words.split("\n")
+                self.__words_read = random.randint(0, 387)
+
+        result = self.__words[self.__words_read:self.__words_read + amount]
+        self.__words_read += amount
+        return list(result)
+
     def get_name(self, amount = 1):
         """
         Gets a name from the dictionary. 
