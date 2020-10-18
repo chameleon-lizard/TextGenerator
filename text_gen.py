@@ -12,16 +12,20 @@ class TextGenerator:
     Methods:
 
     - text(text) - generate text from given input.
-
-    - status() - generate a random status for social network.
     """
-    def text(self, text):
+    def text(self, text, simplicity = 0):
         """
         Method that generates text from given input.
 
-        Params: text - string with original text.
+        Params: 
+        
+        text - string with original text. 
 
-        Return value: tuple - original text and generated text.
+        simplicity = 0 - simplicity of the text. 0 is unset, 1 is simple 
+        (using short words), 2 is standart (using medium sized words), 3 
+        is hard (using long words and scientific terms)
+
+        Return value: string with generated text.
         """
         # Creating dict to store words
         translate_dict = dict()
@@ -29,6 +33,9 @@ class TextGenerator:
 
         # For statement in which we iterate over the text
         for token in tokens:
+            # Creating a cycle counter
+            counter = 0
+
             # Parsing the word
             current_word = self.__morph.parse(token)[0]
             current_normal = self.__morph.parse(current_word.normal_form)[0]
@@ -43,18 +50,36 @@ class TextGenerator:
             
             # Checking if it already exists in our dictionary
             if current_normal.word in translate_dict:
-                tokens[tokens.index(token)] = self.__morph.parse(translate_dict[current_normal.word])[0].inflect(current_word.tag.grammemes).word
+                dict_word = self.__morph.parse(translate_dict[current_normal.word])[0]
+                if dict_word.inflect(current_word.tag.grammemes) == None:
+                    for parse in self.__morph.parse(token):
+                        if dict_word.inflect(parse.tag.grammemes) != None:
+                            tokens[tokens.index(token)] = dict_word.inflect(parse.tag.grammemes).word
+                            break
+                    continue
+                tokens[tokens.index(token)] = dict_word.inflect(current_word.tag.grammemes).word
                 continue
             
             # If the word is name
             if "Name" in params:
                 getword = self.__dr.get_name
             else:
-                getword = self.__dr.get_word
+                if simplicity == 0:
+                    getword = self.__dr.get_word
+                elif simplicity == 1:
+                    getword = self.__dr.get_simple
+                elif simplicity == 2:
+                    getword = self.__dr.get_standart
+                elif simplicity == 3:
+                    getword = self.__dr.get_hard
 
             # Starting to cycle through the dictionary in search for compatible words
             dict_word = getword()
-            while len(dict_word) != 0:
+            while len(dict_word) != 0 and counter != 10000:
+                # Incrementing counter
+                counter += 1
+
+                # Parsing words that we got from the dictionary
                 dict_word = self.__morph.parse(dict_word[0])[0]
                 dict_normal = self.__morph.parse(dict_word.normal_form)[0]
 
@@ -71,6 +96,10 @@ class TextGenerator:
             else:
                 continue
             
+            # Continuing if we fell out of the cycle because we couldn't find proper replacement
+            if counter == 10000:
+                continue
+
             # Adding resulting word to the dictionary and replacing the original word
             translate_dict[current_normal.word] = dict_normal.word
             if dict_word.inflect(current_word.tag.grammemes) == None:
@@ -106,8 +135,3 @@ class TextGenerator:
         for word in stopwords_nltk:
             self.__stop.add(self.__morph.parse(word)[0].normal_form)
         self.__stop.add(self.__morph.parse("который")[0].normal_form)
-
-gen = TextGenerator()
-print(gen.text(text="""
-Всё смешалось в доме Облонских. Жена узнала, что муж был в связи с бывшею в их доме француженкою-гувернанткой, и объявила мужу, что не может жить с ним в одном доме... Жена не выходила из своих комнат, мужа третий день не было дома. Дети бегали по всему дому как потерянные; англичанка поссорилась с экономкой и написала записку приятельнице, прося приискать ей новое место; повар ушел еще вчера со двора, во время обеда; черная кухарка и кучер просили расчета.
-"""))
